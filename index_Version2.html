@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>حضوري بالبصمة - تطبيق الحضور والانصراف</title>
+    <style>
+        * {margin:0; padding:0; box-sizing:border-box; font-family:'-apple-system',BlinkMacSystemFont,'Segoe UI',Roboto,'Tahoma',sans-serif; -webkit-tap-highlight-color:transparent;}
+        body {background:#f5f7fa; min-height:100vh; overflow-x:hidden;}
+        .container {max-width:480px; margin:0 auto; padding:16px;}
+        .header {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:24px 16px; text-align:center; border-radius:0 0 24px 24px; margin:-16px -16px 16px -16px; box-shadow:0 4px 20px rgba(102, 126, 234, 0.3);}
+        .header h1 {font-size:22px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:10px;}
+        .header-icon {font-size:28px;}
+        .date-display {font-size:14px; opacity:0.9;}
+
+        .bio-status {background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); display:flex; align-items:center; gap:12px;}
+        .bio-status.available {border-right:4px solid #22c55e;}
+        .bio-status.unavailable {border-right:4px solid #f59e0b;}
+        .bio-icon {width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px;}
+        .bio-status.available .bio-icon {background:#dcfce7;}
+        .bio-status.unavailable .bio-icon {background:#fef3c7;}
+        .bio-info {flex:1;}
+        .bio-info h3 {font-size:14px; margin-bottom:2px;}
+        .bio-info p {font-size:12px; color:#666;}
+
+        .main-card {background:#fff; border-radius:20px; padding:24px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+        .time-display {text-align:center; margin-bottom:20px;}
+        .time-display .time {font-size:48px; font-weight:200; color:#333; font-variant-numeric:tabular-nums; letter-spacing:2px;}
+        .time-display .date {color:#666; margin-top:8px; font-size:14px;}
+
+        .scanner-container {position:relative; width:180px; height:180px; margin:0 auto 24px;}
+        .scanner-ring {position:absolute; inset:0; border:3px solid #e5e7eb; border-radius:50%; transition:all 0.3s;}
+        .scanner-ring.active {border-color:#667eea; animation:pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;}
+        @keyframes pulse-ring {0% {transform:scale(1); opacity:1;} 100% {transform:scale(1.2); opacity:0;}}
+        .scanner-inner {position:absolute; inset:15px; background:linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:all 0.3s;}
+        .scanner-inner.active {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%);}
+        .scanner-inner.success {background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%);}
+        .scanner-inner.error {background:linear-gradient(135deg, #ef4444 0%, #dc2626 100%);}
+        .fingerprint-icon {font-size:64px; opacity:0.5; transition:all 0.3s;}
+        .scanner-inner.active .fingerprint-icon,
+        .scanner-inner.success .fingerprint-icon,
+        .scanner-inner.error .fingerprint-icon {opacity:1; color:#fff;}
+        .scan-line {position:absolute; top:50%; left:10%; right:10%; height:2px; background:linear-gradient(to right, transparent, #667eea, transparent); opacity:0; transition:opacity 0.3s;}
+        .scanner-inner.active .scan-line {opacity:1; animation:scan 1.5s linear infinite;}
+        @keyframes scan {0% {transform:translateY(-60px); opacity:0;} 10% {opacity:1;} 90% {opacity:1;} 100% {transform:translateY(60px); opacity:0;}}
+        .scanner-text {text-align:center; margin-top:12px; font-size:14px; color:#666;}
+        .scanner-text.active {color:#667eea; font-weight:600;}
+
+        .action-buttons {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;}
+        .btn {padding:20px; border:none; border-radius:16px; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:8px;}
+        .btn:active {transform:scale(0.96);}
+        .btn-checkin {background:linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color:#fff; box-shadow:0 4px 12px rgba(34,197,94,0.3);}
+        .btn-checkin:disabled {background:#86efac; cursor:not-allowed;}
+        .btn-checkout {background:linear-gradient(135deg, #f97316 0%, #ea580c 100%); color:#fff; box-shadow:0 4px 12px rgba(249,115,22,0.3);}
+        .btn-checkout:disabled {background:#fdba74; cursor:not-allowed;}
+        .btn-bio {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; box-shadow:0 4px 12px rgba(102,126,234,0.3);}
+        .btn-icon {font-size:28px;}
+
+        .status-bar {background:#fff; border-radius:12px; padding:16px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); display:flex; justify-content:space-around; text-align:center;}
+        .status-item {flex:1;}
+        .status-item .label {font-size:11px; color:#666; margin-bottom:4px;}
+        .status-item .value {font-size:18px; font-weight:700; color:#333; font-variant-numeric:tabular-nums;}
+        .status-item .value.in {color:#22c55e;}
+        .status-item .value.out {color:#f97316;}
+
+        .records-section {background:#fff; border-radius:20px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
+        .records-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
+        .records-header h3 {font-size:16px; color:#333;}
+        .btn-export {background:#f3f4f6; border:none; padding:8px 16px; border-radius:8px; font-size:12px; color:#374151; cursor:pointer; display:flex; align-items:center; gap:6px;}
+        .record-item {display:flex; align-items:center; padding:12px; background:#f9fafb; border-radius:12px; margin-bottom:8px; border-right:3px solid #e5e7eb;}
+        .record-item.checkin {border-right-color:#22c55e;}
+        .record-item.checkout {border-right-color:#f97316;}
+        .record-icon {width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-left:12px; font-size:16px;}
+        .record-item.checkin .record-icon {background:#dcfce7; color:#16a34a;}
+        .record-item.checkout .record-icon {background:#ffedd5; color:#ea580c;}
+        .record-info {flex:1;}
+        .record-info .type {font-weight:600; font-size:14px; margin-bottom:2px;}
+        .record-info .details {font-size:11px; color:#666; font-family:monospace;}
+        .record-method {font-size:10px; padding:2px 8px; border-radius:4px; margin-right:8px;}
+        .record-method.bio {background:#ede9fe; color:#7c3aed;}
+        .record-method.manual {background:#e5e7eb; color:#6b7280;}
+
+        .toast {position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px); background:#333; color:#fff; padding:14px 24px; border-radius:12px; font-size:14px; z-index:1000; opacity:0; transition:all 0.3s; display:flex; align-items:center; gap:10px;}
+        .toast.show {transform:translateX(-50%) translateY(0); opacity:1;}
+        .toast.success {background:#22c55e;}
+        .toast.error {background:#ef4444;}
+
+        .modal-overlay {position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:999; padding:16px;}
+        .modal-overlay.active {display:flex;}
+        .modal {background:#fff; border-radius:20px; padding:24px; width:100%; max-width:400px; text-align:center;}
+        .modal h3 {font-size:18px; margin-bottom:12px;}
+        .modal p {color:#666; font-size:14px; margin-bottom:20px; line-height:1.6;}
+        .modal-icon {font-size:64px; margin-bottom:16px;}
+        .btn-modal {width:100%; padding:14px; border:none; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer; margin-bottom:8px;}
+        .btn-primary {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff;}
+        .btn-secondary {background:#f3f4f6; color:#374151;}
+
+        .empty-state {text-align:center; padding:40px 20px; color:#9ca3af;}
+        .empty-state-icon {font-size:48px; margin-bottom:12px;}
+
+        .loading-overlay {position:fixed; inset:0; background:rgba(255,255,255,0.9); display:none; align-items:center; justify-content:center; z-index:998; flex-direction:column; gap:16px;}
+        .loading-overlay.active {display:flex;}
+        .spinner {width:48px; height:48px; border:3px solid #e5e7eb; border-top-color:#667eea; border-radius:50%; animation:spin 1s linear infinite;}
+        @keyframes spin {to {transform:rotate(360deg);}}
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>
+            <span class="header-icon">👆</span>
+            حضوري بالبصمة
+        </h1>
+        <div class="date-display" id="header-date"></div>
+    </div>
+    <!-- Biometric Status -->
+    <div class="bio-status unavailable" id="bio-status">
+        <div class="bio-icon">🔒</div>
+        <div class="bio-info">
+            <h3 id="bio-title">جاري التحقق...</h3>
+            <p id="bio-desc">التحقق من دعم البصمة</p>
+        </div>
+    </div>
+    <!-- Main Card -->
+    <div class="main-card">
+        <!-- Time -->
+        <div class="time-display">
+            <div class="time" id="current-time">00:00:00</div>
+            <div class="date" id="current-date"></div>
+        </div>
+        <!-- Fingerprint Scanner -->
+        <div class="scanner-container" id="scanner" onclick="startBiometricAuth()">
+            <div class="scanner-ring" id="scanner-ring"></div>
+            <div class="scanner-inner" id="scanner-inner">
+                <span class="fingerprint-icon">👆</span>
+                <div class="scan-line"></div>
+            </div>
+        </div>
+        <div class="scanner-text" id="scanner-text">اضغط للتسجيل بالبصمة</div>
+        <!-- Alternative Buttons -->
+        <div class="action-buttons">
+            <button class="btn btn-checkin" id="btn-checkin" onclick="manualCheckIn()">
+                <span class="btn-icon">✅</span>
+                <span>دخول يدوي</span>
+            </button>
+            <button class="btn btn-checkout" id="btn-checkout" onclick="manualCheckOut()" disabled>
+                <span class="btn-icon">🚪</span>
+                <span>خروج يدوي</span>
+            </button>
+        </div>
+    </div>
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="label">دخول</div>
+            <div class="value in" id="status-in">----</div>
+        </div>
+        <div class="status-item">
+            <div class="label">خروج</div>
+            <div class="value out" id="status-out">----</div>
+        </div>
+        <div class="status-item">
+            <div class="label">المدة</div>
+            <div class="value" id="status-duration">--</div>
+        </div>
+    </div>
+    <!-- Records -->
+    <div class="records-section">
+        <div class="records-header">
+            <h3>📋 سجل اليوم</h3>
+            <button class="btn-export" onclick="exportReport()">📤 تصدير</button>
+        </div>
+        <div id="records-list">
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>لا توجد سجلات</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Setup Modal -->
+<div class="modal-overlay" id="setup-modal">
+    <div class="modal">
+        <div class="modal-icon">👆</div>
+        <h3>إعداد البصمة</h3>
+        <p>للاستخدام الأمثل، قم بإعداد مصادقة البصمة على جهازك. هذا يضمن أمان تسجيلاتك.</p>
+        <button class="btn-modal btn-primary" onclick="setupBiometric()">تفعيل البصمة</button>
+        <button class="btn-modal btn-secondary" onclick="skipSetup()">تخطي للآن</button>
+    </div>
+</div>
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+<!-- Loading -->
+<div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <p>جاري المصادقة...</p>
+</div>
+<script>
+// ==================== DATA ====================
+let biometricAvailable = false;
+let biometricRegistered = false;
+let todayRecords = [];
+let isScanning = false;
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    setInterval(updateTime, 1000);
+    checkBiometricSupport();
+    loadTodayRecords();
+
+    // Check if first time
+    if (!localStorage.getItem('bio_setup_complete')) {
+        document.getElementById('setup-modal').classList.add('active');
+    }
+});
+
+// ==================== BIOMETRIC CHECK ====================
+async function checkBiometricSupport() {
+    const statusBox = document.getElementById('bio-status');
+    const title = document.getElementById('bio-title');
+    const desc = document.getElementById('bio-desc');
+
+    // Check if running as PWA (required for biometric on iOS)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true;
+
+    // Check WebAuthn support
+    if (!window.PublicKeyCredential) {
+        title.textContent = 'البصمة غير متوفرة';
+        desc.textContent = 'جهازك لا يدعم WebAuthn';
+        statusBox.className = 'bio-status unavailable';
+        return;
+    }
+
+    try {
+        // Check if user verifying platform authenticator is available
+        const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+
+        if (available) {
+            biometricAvailable = true;
+            title.textContent = 'البصمة متوفرة ✓';
+            desc.textContent = 'انقر على الماسح للتسجيل';
+            statusBox.className = 'bio-status available';
+
+            // (اختياري: يمكن اختبار Credential)
+        } else {
+            title.textContent = 'البصمة غير متوفرة';
+            desc.textContent = 'ثبت التطبيق أولاً';
+            statusBox.className = 'bio-status unavailable';
+        }
+    } catch (e) {
+        title.textContent = 'تحقق يدوي مطلوب';
+        desc.textContent = 'استخدم الأزرار أدناه';
+        statusBox.className = 'bio-status unavailable';
+    }
+}
+
+// ==================== BIOMETRIC AUTH ====================
+async function startBiometricAuth() {
+    if (isScanning) return;
+
+    if (!biometricAvailable) {
+        showToast('البصمة غير متوفرة، استخدم الأزرار اليدوية', 'error');
+        return;
+    }
+
+    // Determine action based on current state
+    const lastRecord = todayRecords[todayRecords.length - 1];
+    const action = (!lastRecord || lastRecord.type === 'checkout') ? 'checkin' : 'checkout';
+
+    isScanning = true;
+    updateScannerState('scanning');
+
+    try {
+        // Generate challenge
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+
+        // Create authentication options
+        const publicKeyCredentialRequestOptions = {
+            challenge: challenge,
+            allowCredentials: [],
+            userVerification: 'required',
+            timeout: 60000
+        };
+
+        // Attempt biometric authentication
+        const credential = await navigator.credentials.get({
+            publicKey: publicKeyCredentialRequestOptions
+        });
+
+        if (credential) {
+            // Success - proceed with attendance
+            updateScannerState('success');
+            setTimeout(() => {
+                if (action === 'checkin') {
+                    performCheckIn('biometric');
+                } else {
+                    performCheckOut('biometric');
+                }
+                updateScannerState('idle');
+                isScanning = false;
+            }, 500);
+        } else {
+            throw new Error('No credential');
+        }
+    } catch (error) {
+        updateScannerState('error');
+        showToast('فشلت المصادقة، جرب مرة أخرى', 'error');
+        setTimeout(() => {
+            updateScannerState('idle');
+            isScanning = false;
+        }, 1500);
+    }
+}
+
+function updateScannerState(state) {
+    const ring = document.getElementById('scanner-ring');
+    const inner = document.getElementById('scanner-inner');
+    const text = document.getElementById('scanner-text');
+
+    ring.className = 'scanner-ring';
+    inner.className = 'scanner-inner';
+    text.className = 'scanner-text';
+
+    switch (state) {
+        case 'scanning':
+            ring.classList.add('active');
+            inner.classList.add('active');
+            text.classList.add('active');
+            text.textContent = 'ضع إصبعك على الماسح...';
+            break;
+        case 'success':
+            inner.classList.add('success');
+            text.textContent = '✓ تم التحقق';
+            break;
+        case 'error':
+            inner.classList.add('error');
+            text.textContent = '✗ فشل التحقق';
+            break;
+        default:
+            const lastRecord = todayRecords[todayRecords.length - 1];
+            const nextAction = (!lastRecord || lastRecord.type === 'checkout') ? 'دخول' : 'خروج';
+            text.textContent = `اضغط للتسجيل بالبصمة (${nextAction})`;
+    }
+}
+
+// ==================== MANUAL ACTIONS ====================
+function manualCheckIn() {
+    performCheckIn('manual');
+}
+
+function manualCheckOut() {
+    performCheckOut('manual');
+}
+
+function performCheckIn(method) {
+    const now = new Date();
+    const record = {
+        id: Date.now(),
+        type: 'checkin',
+        time: now.toLocaleTimeString('ar-SA', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+        fullTime: now.toLocaleTimeString('ar-SA', { hour12: false }),
+        timestamp: now.getTime(),
+        date: now.toLocaleDateString('ar-SA'),
+        method: method,
+        verified: method === 'biometric'
+    };
+
+    todayRecords.push(record);
+    saveRecords();
+    updateUI();
+
+    const msg = method === 'biometric' ? '✓ تم تسجيل الدخول بالبصمة' : '✓ تم تسجيل الدخول';
+    showToast(msg, 'success');
+}
+
+function performCheckOut(method) {
+    const now = new Date();
+    const record = {
+        id: Date.now(),
+        type: 'checkout',
+        time: now.toLocaleTimeString('ar-SA', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+        fullTime: now.toLocaleTimeString('ar-SA', { hour12: false }),
+        timestamp: now.getTime(),
+        date: now.toLocaleDateString('ar-SA'),
+        method: method,
+        verified: method === 'biometric'
+    };
+
+    todayRecords.push(record);
+    saveRecords();
+    updateUI();
+
+    const msg = method === 'biometric' ? '✓ تم تسجيل الخروج بالبصمة' : '✓ تم تسجيل الخروج';
+    showToast(msg, 'success');
+}
+
+// ==================== STORAGE ====================
+function saveRecords() {
+    localStorage.setItem('attendance_records', JSON.stringify(todayRecords));
+}
+
+function loadTodayRecords() {
+    const saved = localStorage.getItem('attendance_records');
+    if (saved) {
+        const all = JSON.parse(saved);
+        const today = new Date().toLocaleDateString('ar-SA');
+        todayRecords = all.filter(r => r.date === today);
+        updateUI();
+    }
+}
+
+// ==================== UI UPDATES ====================
+function updateTime() {
+    const now = new Date();
+    document.getElementById('current-time').textContent =
+        now.toLocaleTimeString('ar-SA', { hour12: false });
+    document.getElementById('current-date').textContent =
+        now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('header-date').textContent =
+        now.toLocaleDateString('ar-SA');
+}
+
+function updateUI() {
+    renderRecords();
+    updateStatusBar();
+    updateButtons();
+    updateScannerText();
+}
+
+function renderRecords() {
+    const container = document.getElementById('records-list');
+
+    if (todayRecords.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>لا توجد سجلات اليوم</p>
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = todayRecords.slice().reverse().map(record => `
+        <div class="record-item ${record.type}">
+            <div class="record-icon">${record.type === 'checkin' ? '✅' : '🚪'}</div>
+            <div class="record-info">
+                <div class="type">
+                    ${record.type === 'checkin' ? 'تسجيل دخول' : 'تسجيل خروج'}
+                    <span class="record-method ${record.method}">
+                        ${record.method === 'biometric' ? 'بصمة' : 'يدوي'}
+                    </span>
+                </div>
+                <div class="details">${record.fullTime}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateStatusBar() {
+    const checkin = todayRecords.find(r => r.type === 'checkin');
+    const checkout = todayRecords.find(r => r.type === 'checkout');
+
+    document.getElementById('status-in').textContent = checkin ? checkin.time : '----';
+    document.getElementById('status-out').textContent = checkout ? checkout.time : '----';
+
+    if (checkin && checkout) {
+        const duration = checkout.timestamp - checkin.timestamp;
+        const hours = Math.floor(duration / 3600000);
+        const minutes = Math.floor((duration % 3600000) / 60000);
+        document.getElementById('status-duration').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
+    } else {
+        document.getElementById('status-duration').textContent = '--';
+    }
+}
+
+function updateButtons() {
+    const lastRecord = todayRecords[todayRecords.length - 1];
+    const checkinBtn = document.getElementById('btn-checkin');
+    const checkoutBtn = document.getElementById('btn-checkout');
+
+    if (!lastRecord || lastRecord.type === 'checkout') {
+        checkinBtn.disabled = false;
+        checkoutBtn.disabled = true;
+    } else {
+        checkinBtn.disabled = true;
+        checkoutBtn.disabled = false;
+    }
+}
+
+function updateScannerText() {
+    if (isScanning) return;
+    const lastRecord = todayRecords[todayRecords.length - 1];
+    const nextAction = (!lastRecord || lastRecord.type === 'checkout') ? 'دخول' : 'خروج';
+    document.getElementById('scanner-text').textContent = `اضغط للتسجيل بالبصمة (${nextAction})`;
+}
+
+// ==================== SETUP ====================
+async function setupBiometric() {
+    document.getElementById('setup-modal').classList.remove('active');
+    document.getElementById('loading').classList.add('active');
+
+    try {
+        // Create credential for future use
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const userId = crypto.getRandomValues(new Uint8Array(16));
+
+        const publicKeyCredentialCreationOptions = {
+            challenge: challenge,
+            rp: {
+                name: 'حضوري',
+                id: window.location.hostname
+            },
+            user: {
+                id: userId,
+                name: 'user@huduri.app',
+                displayName: 'مستخدم حضوري'
+            },
+            pubKeyCredParams: [{
+                type: 'public-key',
+                alg: -7 // ES256
+            }],
+            authenticatorSelection: {
+                authenticatorAttachment: 'platform',
+                userVerification: 'required'
+            },
+            timeout: 60000
+        };
+
+        const credential = await navigator.credentials.create({
+            publicKey: publicKeyCredentialCreationOptions
+        });
+
+        if (credential) {
+            localStorage.setItem('bio_setup_complete', 'true');
+            localStorage.setItem('bio_credential_id', credential.id);
+            biometricRegistered = true;
+            showToast('✓ تم إعداد البصمة بنجاح', 'success');
+        }
+
+    } catch (error) {
+        showToast('تم التخطي، يمكنك الإعداد لاحقاً', 'info');
+    }
+
+    document.getElementById('loading').classList.remove('active');
+    checkBiometricSupport();
+}
+
+function skipSetup() {
+    document.getElementById('setup-modal').classList.remove('active');
+    localStorage.setItem('bio_setup_complete', 'true');
+}
+
+// ==================== EXPORT ====================
+function exportReport() {
+    if (todayRecords.length === 0) {
+        showToast('لا توجد سجلات للتصدير', 'error');
+        return;
+    }
+
+    const today = new Date().toLocaleDateString('ar-SA').replace(/\//g, '-');
+    let csv = 'التاريخ,الوقت,النوع,الطريقة,موثق\n';
+
+    todayRecords.forEach(r => {
+        csv += `${r.date},${r.fullTime},${r.type === 'checkin' ? 'دخول' : 'خروج'},${r.method === 'biometric' ? 'بصمة' : 'يدوي'},${r.verified ? 'نعم' : 'لا'}\n`;
+    });
+
+    // Summary
+    const checkin = todayRecords.find(r => r.type === 'checkin');
+    const checkout = todayRecords.find(r => r.type === 'checkout');
+    csv += '\nملخص اليوم\n';
+    csv += `الدخول,${checkin ? checkin.time : '--'}\n`;
+    csv += `الخروج,${checkout ? checkout.time : '--'}\n`;
+    if (checkin && checkout) {
+        const duration = checkout.timestamp - checkin.timestamp;
+        const hours = Math.floor(duration / 3600000);
+        const minutes = Math.floor((duration % 3600000) / 60000);
+        csv += `مدة العمل,${hours} ساعة ${minutes} دقيقة\n`;
+    }
+    csv += `طريقة التسجيل,${todayRecords.some(r => r.method === 'biometric') ? 'بصمة حيوية' : 'يدوي'}\n`;
+
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `attendance_bio_${today}.csv`;
+    link.click();
+
+    showToast('✓ تم تصدير التقرير', 'success');
+}
+
+// ==================== UTILS ====================
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast ' + type;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+// Prevent zoom on double tap
+let lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+</script>
+</body>
+</html>
