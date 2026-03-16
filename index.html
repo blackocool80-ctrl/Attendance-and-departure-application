@@ -6,16 +6,15 @@
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>حضوري بالبصمة - تطبيق الحضور والانصراف</title>
+    <title>حضوري بالبصمة - نقاط الحضور</title>
     <style>
         * {margin:0; padding:0; box-sizing:border-box; font-family:'-apple-system',BlinkMacSystemFont,'Segoe UI',Roboto,'Tahoma',sans-serif; -webkit-tap-highlight-color:transparent;}
         body {background:#f5f7fa; min-height:100vh; overflow-x:hidden;}
         .container {max-width:480px; margin:0 auto; padding:16px;}
-        .header {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:24px 16px; text-align:center; border-radius:0 0 24px 24px; margin:-16px -16px 16px -16px; box-shadow:0 4px 20px rgba(102, 126, 234, 0.3);}
+        .header {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; padding:24px 16px; text-align:center; border-radius:0 0 24px 24px; margin:-16px -16px 16px -16px; box-shadow:0 4px 20px rgba(102,126,234,0.3);}
         .header h1 {font-size:22px; margin-bottom:8px; display:flex; align-items:center; justify-content:center; gap:10px;}
         .header-icon {font-size:28px;}
         .date-display {font-size:14px; opacity:0.9;}
-
         .bio-status {background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08); display:flex; align-items:center; gap:12px;}
         .bio-status.available {border-right:4px solid #22c55e;}
         .bio-status.unavailable {border-right:4px solid #f59e0b;}
@@ -25,12 +24,10 @@
         .bio-info {flex:1;}
         .bio-info h3 {font-size:14px; margin-bottom:2px;}
         .bio-info p {font-size:12px; color:#666;}
-
         .main-card {background:#fff; border-radius:20px; padding:24px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
         .time-display {text-align:center; margin-bottom:20px;}
         .time-display .time {font-size:48px; font-weight:200; color:#333; font-variant-numeric:tabular-nums; letter-spacing:2px;}
         .time-display .date {color:#666; margin-top:8px; font-size:14px;}
-
         .scanner-container {position:relative; width:180px; height:180px; margin:0 auto 24px;}
         .scanner-ring {position:absolute; inset:0; border:3px solid #e5e7eb; border-radius:50%; transition:all 0.3s;}
         .scanner-ring.active {border-color:#667eea; animation:pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;}
@@ -48,7 +45,6 @@
         @keyframes scan {0% {transform:translateY(-60px); opacity:0;} 10% {opacity:1;} 90% {opacity:1;} 100% {transform:translateY(60px); opacity:0;}}
         .scanner-text {text-align:center; margin-top:12px; font-size:14px; color:#666;}
         .scanner-text.active {color:#667eea; font-weight:600;}
-
         .action-buttons {display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;}
         .btn {padding:20px; border:none; border-radius:16px; font-size:16px; font-weight:600; cursor:pointer; transition:all 0.2s; display:flex; flex-direction:column; align-items:center; gap:8px;}
         .btn:active {transform:scale(0.96);}
@@ -58,14 +54,12 @@
         .btn-checkout:disabled {background:#fdba74; cursor:not-allowed;}
         .btn-bio {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff; box-shadow:0 4px 12px rgba(102,126,234,0.3);}
         .btn-icon {font-size:28px;}
-
         .status-bar {background:#fff; border-radius:12px; padding:16px; margin-bottom:16px; box-shadow:0 2px 8px rgba(0,0,0,0.06); display:flex; justify-content:space-around; text-align:center;}
         .status-item {flex:1;}
         .status-item .label {font-size:11px; color:#666; margin-bottom:4px;}
         .status-item .value {font-size:18px; font-weight:700; color:#333; font-variant-numeric:tabular-nums;}
         .status-item .value.in {color:#22c55e;}
         .status-item .value.out {color:#f97316;}
-
         .records-section {background:#fff; border-radius:20px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.08);}
         .records-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;}
         .records-header h3 {font-size:16px; color:#333;}
@@ -80,14 +74,12 @@
         .record-info .type {font-weight:600; font-size:14px; margin-bottom:2px;}
         .record-info .details {font-size:11px; color:#666; font-family:monospace;}
         .record-method {font-size:10px; padding:2px 8px; border-radius:4px; margin-right:8px;}
-        .record-method.bio {background:#ede9fe; color:#7c3aed;}
+        .record-method.biometric {background:#ede9fe; color:#7c3aed;}
         .record-method.manual {background:#e5e7eb; color:#6b7280;}
-
         .toast {position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px); background:#333; color:#fff; padding:14px 24px; border-radius:12px; font-size:14px; z-index:1000; opacity:0; transition:all 0.3s; display:flex; align-items:center; gap:10px;}
         .toast.show {transform:translateX(-50%) translateY(0); opacity:1;}
         .toast.success {background:#22c55e;}
         .toast.error {background:#ef4444;}
-
         .modal-overlay {position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:999; padding:16px;}
         .modal-overlay.active {display:flex;}
         .modal {background:#fff; border-radius:20px; padding:24px; width:100%; max-width:400px; text-align:center;}
@@ -97,14 +89,14 @@
         .btn-modal {width:100%; padding:14px; border:none; border-radius:12px; font-size:16px; font-weight:600; cursor:pointer; margin-bottom:8px;}
         .btn-primary {background:linear-gradient(135deg, #667eea 0%, #764ba2 100%); color:#fff;}
         .btn-secondary {background:#f3f4f6; color:#374151;}
-
         .empty-state {text-align:center; padding:40px 20px; color:#9ca3af;}
         .empty-state-icon {font-size:48px; margin-bottom:12px;}
-
         .loading-overlay {position:fixed; inset:0; background:rgba(255,255,255,0.9); display:none; align-items:center; justify-content:center; z-index:998; flex-direction:column; gap:16px;}
         .loading-overlay.active {display:flex;}
         .spinner {width:48px; height:48px; border:3px solid #e5e7eb; border-top-color:#667eea; border-radius:50%; animation:spin 1s linear infinite;}
         @keyframes spin {to {transform:rotate(360deg);}}
+        input[type='text'] {width:90%; padding:10px; border-radius:7px; border:1px solid #ccc; margin-bottom:16px; font-size:16px;}
+        .error-msg { color: #f00; margin-bottom: 10px; }
     </style>
 </head>
 <body>
@@ -187,7 +179,13 @@
     <div class="modal">
         <div class="modal-icon">👆</div>
         <h3>إعداد البصمة</h3>
-        <p>للاستخدام الأمثل، قم بإعداد مصادقة البصمة على جهازك. هذا يضمن أمان تسجيلاتك.</p>
+        <p>
+            للاستخدام الأمثل، ادخل اسمك وفعل المصادقة بالبصمة.<br>
+            لن يقبل تسجيل الحضور إلا عند وجودك في أحد المقرين:<br>
+            <b>الصناعية الدمام</b> أو <b>الهاف مون</b>
+        </p>
+        <div id="name-error" class="error-msg"></div>
+        <input type="text" id="employee-name" placeholder="ادخل اسمك..." autocomplete="off">
         <button class="btn-modal btn-primary" onclick="setupBiometric()">تفعيل البصمة</button>
         <button class="btn-modal btn-secondary" onclick="skipSetup()">تخطي للآن</button>
     </div>
@@ -200,54 +198,94 @@
     <p>جاري المصادقة...</p>
 </div>
 <script>
-// ==================== DATA ====================
+// ============== بيانات المواقع =================
+const LOCATIONS = [
+    {name: "الصناعية الدمام", lat: 26.253861, lng: 49.950306},
+    {name: "الهاف مون", lat: 26.228694, lng: 50.020056}
+];
+const OFFICE_RADIUS_METERS = 150;
+
+// حساب المسافة بين نقطتين (Haversine)
+function distance(lat1, lng1, lat2, lng2) {
+    function toRad(a) { return a * Math.PI / 180; }
+    const R = 6371e3;
+    const x1 = toRad(lat1), x2 = toRad(lat2);
+    const dLat = toRad(lat2 - lat1), dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(x1)*Math.cos(x2)*Math.sin(dLng/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+}
+
+// البحث عن أقرب موقع والاسم
+function getCurrentLocationName(lat, lng) {
+    for (const loc of LOCATIONS) {
+        if (distance(lat, lng, loc.lat, loc.lng) <= OFFICE_RADIUS_METERS) {
+            return loc.name;
+        }
+    }
+    return null;
+}
+
+// باقي متغيرات النظام
 let biometricAvailable = false;
-let biometricRegistered = false;
 let todayRecords = [];
 let isScanning = false;
+let employeeName = "";
 
-// ==================== INIT ====================
+// ============= INIT و التهيئة ============
 document.addEventListener('DOMContentLoaded', () => {
     updateTime();
     setInterval(updateTime, 1000);
     checkBiometricSupport();
     loadTodayRecords();
-
-    // Check if first time
-    if (!localStorage.getItem('bio_setup_complete')) {
+    employeeName = localStorage.getItem('employee_name') || "";
+    if (!localStorage.getItem('bio_setup_complete') || !employeeName) {
         document.getElementById('setup-modal').classList.add('active');
     }
 });
 
-// ==================== BIOMETRIC CHECK ====================
+// ============= التحقق من المكان ============
+async function checkLocationAndContinue(callback) {
+    if (!navigator.geolocation) {
+        showToast("جهازك لا يدعم التحقق الجغرافي", "error");
+        return;
+    }
+    showToast("يتم التحقق من الموقع...", "info");
+    navigator.geolocation.getCurrentPosition(
+        (pos) => {
+            const lat = pos.coords.latitude, lng = pos.coords.longitude;
+            const locName = getCurrentLocationName(lat, lng);
+            if (locName) {
+                callback(locName);
+            } else {
+                showToast("انت خارج المقرَّين المسموحين! لابد أن تكون في الصناعية الدمام أو الهاف مون.", "error");
+            }
+        },
+        (err) => {
+            showToast("لم يتم السماح بوصول الموقع - يجب تفعيله من إعدادات المتصفح", "error");
+        },
+        { enableHighAccuracy:true, timeout:10000 }
+    );
+}
+
+// =========== خيارات البصمة والوظائف ============
 async function checkBiometricSupport() {
     const statusBox = document.getElementById('bio-status');
     const title = document.getElementById('bio-title');
     const desc = document.getElementById('bio-desc');
-
-    // Check if running as PWA (required for biometric on iOS)
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-        || window.navigator.standalone === true;
-
-    // Check WebAuthn support
     if (!window.PublicKeyCredential) {
         title.textContent = 'البصمة غير متوفرة';
         desc.textContent = 'جهازك لا يدعم WebAuthn';
         statusBox.className = 'bio-status unavailable';
         return;
     }
-
     try {
-        // Check if user verifying platform authenticator is available
         const available = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
-
         if (available) {
             biometricAvailable = true;
             title.textContent = 'البصمة متوفرة ✓';
             desc.textContent = 'انقر على الماسح للتسجيل';
             statusBox.className = 'bio-status available';
-
-            // (اختياري: يمكن اختبار Credential)
         } else {
             title.textContent = 'البصمة غير متوفرة';
             desc.textContent = 'ثبت التطبيق أولاً';
@@ -260,73 +298,229 @@ async function checkBiometricSupport() {
     }
 }
 
-// ==================== BIOMETRIC AUTH ====================
 async function startBiometricAuth() {
     if (isScanning) return;
-
-    if (!biometricAvailable) {
-        showToast('البصمة غير متوفرة، استخدم الأزرار اليدوية', 'error');
-        return;
-    }
-
-    // Determine action based on current state
-    const lastRecord = todayRecords[todayRecords.length - 1];
-    const action = (!lastRecord || lastRecord.type === 'checkout') ? 'checkin' : 'checkout';
-
-    isScanning = true;
-    updateScannerState('scanning');
-
-    try {
-        // Generate challenge
-        const challenge = crypto.getRandomValues(new Uint8Array(32));
-
-        // Create authentication options
-        const publicKeyCredentialRequestOptions = {
-            challenge: challenge,
-            allowCredentials: [],
-            userVerification: 'required',
-            timeout: 60000
-        };
-
-        // Attempt biometric authentication
-        const credential = await navigator.credentials.get({
-            publicKey: publicKeyCredentialRequestOptions
-        });
-
-        if (credential) {
-            // Success - proceed with attendance
-            updateScannerState('success');
+    if (!biometricAvailable) { showToast('البصمة غير متوفرة، استخدم الأزرار اليدوية', 'error'); return; }
+    checkLocationAndContinue(async (locName) => {
+        const lastRecord = todayRecords[todayRecords.length - 1];
+        const action = (!lastRecord || lastRecord.type === 'checkout') ? 'checkin' : 'checkout';
+        isScanning = true;
+        updateScannerState('scanning');
+        try {
+            const challenge = crypto.getRandomValues(new Uint8Array(32));
+            const publicKeyCredentialRequestOptions = {
+                challenge: challenge, allowCredentials: [], userVerification: 'required', timeout: 60000
+            };
+            const credential = await navigator.credentials.get({
+                publicKey: publicKeyCredentialRequestOptions
+            });
+            if (credential) {
+                updateScannerState('success');
+                setTimeout(() => {
+                    if (action === 'checkin') {
+                        performCheckIn('biometric', locName);
+                    } else {
+                        performCheckOut('biometric', locName);
+                    }
+                    updateScannerState('idle');
+                    isScanning = false;
+                }, 500);
+            } else {
+                throw new Error('No credential');
+            }
+        } catch (error) {
+            updateScannerState('error');
+            showToast('فشلت المصادقة بالبصمة أو لا يوجد رمز مرور مسجل (فعل البصمة أولاً)', 'error');
             setTimeout(() => {
-                if (action === 'checkin') {
-                    performCheckIn('biometric');
-                } else {
-                    performCheckOut('biometric');
-                }
                 updateScannerState('idle');
                 isScanning = false;
-            }, 500);
-        } else {
-            throw new Error('No credential');
+            }, 1500);
         }
-    } catch (error) {
-        updateScannerState('error');
-        showToast('فشلت المصادقة، جرب مرة أخرى', 'error');
-        setTimeout(() => {
-            updateScannerState('idle');
-            isScanning = false;
-        }, 1500);
+    });
+}
+
+function manualCheckIn() { checkLocationAndContinue((locName) => performCheckIn('manual', locName)); }
+function manualCheckOut() { checkLocationAndContinue((locName) => performCheckOut('manual', locName)); }
+function performCheckIn(method, locName) {
+    const now = new Date();
+    const record = {
+        id: Date.now(), name: employeeName, location: locName,
+        type: 'checkin',
+        time: now.toLocaleTimeString('ar-SA', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+        fullTime: now.toLocaleTimeString('ar-SA', { hour12: false }),
+        timestamp: now.getTime(),
+        date: now.toLocaleDateString('ar-SA'),
+        method: method, verified: method === 'biometric'
+    };
+    todayRecords.push(record); saveRecords(); updateUI();
+    showToast((method === 'biometric' ? '✓ تم تسجيل الدخول بالبصمة في ' : '✓ تم تسجيل الدخول في ') + locName, 'success');
+}
+function performCheckOut(method, locName) {
+    const now = new Date();
+    const record = {
+        id: Date.now(), name: employeeName, location: locName,
+        type: 'checkout',
+        time: now.toLocaleTimeString('ar-SA', { hour12: false, hour: '2-digit', minute: '2-digit' }),
+        fullTime: now.toLocaleTimeString('ar-SA', { hour12: false }),
+        timestamp: now.getTime(),
+        date: now.toLocaleDateString('ar-SA'),
+        method: method, verified: method === 'biometric'
+    };
+    todayRecords.push(record); saveRecords(); updateUI();
+    showToast((method === 'biometric' ? '✓ تم تسجيل الخروج بالبصمة في ' : '✓ تم تسجيل الخروج في ') + locName, 'success');
+}
+
+function saveRecords() { localStorage.setItem('attendance_records', JSON.stringify(todayRecords)); }
+function loadTodayRecords() {
+    const saved = localStorage.getItem('attendance_records');
+    if (saved) {
+        const all = JSON.parse(saved);
+        const today = new Date().toLocaleDateString('ar-SA');
+        todayRecords = all.filter(r => r.date === today);
+        updateUI();
     }
 }
 
+function updateTime() {
+    const now = new Date();
+    document.getElementById('current-time').textContent =
+        now.toLocaleTimeString('ar-SA', { hour12: false });
+    document.getElementById('current-date').textContent =
+        now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('header-date').textContent =
+        now.toLocaleDateString('ar-SA');
+}
+function updateUI() {
+    renderRecords();
+    updateStatusBar();
+    updateButtons();
+    updateScannerText();
+}
+function renderRecords() {
+    const container = document.getElementById('records-list');
+    if (todayRecords.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <p>لا توجد سجلات اليوم</p>
+            </div>
+        `;
+        return;
+    }
+    container.innerHTML = todayRecords.slice().reverse().map(record => `
+        <div class="record-item ${record.type}">
+            <div class="record-icon">${record.type === 'checkin' ? '✅' : '🚪'}</div>
+            <div class="record-info">
+                <div class="type">
+                    ${record.type === 'checkin' ? 'تسجيل دخول' : 'تسجيل خروج'}
+                    <span class="record-method ${record.method}">
+                        ${record.method === 'biometric' ? 'بصمة' : 'يدوي'}
+                        - ${record.name || ''} (${record.location || ''})
+                    </span>
+                </div>
+                <div class="details">${record.fullTime}</div>
+            </div>
+        </div>
+    `).join('');
+}
+function updateStatusBar() {
+    const checkin = todayRecords.find(r => r.type === 'checkin');
+    const checkout = todayRecords.find(r => r.type === 'checkout');
+    document.getElementById('status-in').textContent = checkin ? checkin.time : '----';
+    document.getElementById('status-out').textContent = checkout ? checkout.time : '----';
+    if (checkin && checkout) {
+        const duration = checkout.timestamp - checkin.timestamp;
+        const hours = Math.floor(duration / 3600000);
+        const minutes = Math.floor((duration % 3600000) / 60000);
+        document.getElementById('status-duration').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
+    } else {
+        document.getElementById('status-duration').textContent = '--';
+    }
+}
+function updateButtons() {
+    const lastRecord = todayRecords[todayRecords.length - 1];
+    const checkinBtn = document.getElementById('btn-checkin');
+    const checkoutBtn = document.getElementById('btn-checkout');
+    if (!lastRecord || lastRecord.type === 'checkout') {
+        checkinBtn.disabled = false;
+        checkoutBtn.disabled = true;
+    } else {
+        checkinBtn.disabled = true;
+        checkoutBtn.disabled = false;
+    }
+}
+function updateScannerText() {
+    if (isScanning) return;
+    const lastRecord = todayRecords[todayRecords.length - 1];
+    const nextAction = (!lastRecord || lastRecord.type === 'checkout') ? 'دخول' : 'خروج';
+    document.getElementById('scanner-text').textContent = `اضغط للتسجيل بالبصمة (${nextAction})`;
+}
+async function setupBiometric() {
+    const nameInput = document.getElementById('employee-name');
+    const errorBox = document.getElementById('name-error');
+    if (!nameInput.value.trim()) {
+        errorBox.textContent = "الرجاء إدخال الاسم";
+        return;
+    }
+    errorBox.textContent = "";
+    employeeName = nameInput.value.trim();
+    localStorage.setItem('employee_name', employeeName);
+    document.getElementById('setup-modal').classList.remove('active');
+    document.getElementById('loading').classList.add('active');
+    try {
+        const challenge = crypto.getRandomValues(new Uint8Array(32));
+        const userId = crypto.getRandomValues(new Uint8Array(16));
+        const publicKeyCredentialCreationOptions = {
+            challenge: challenge,
+            rp: {name: 'حضوري', id: window.location.hostname},
+            user: {id: userId, name: 'user@huduri.app', displayName: employeeName},
+            pubKeyCredParams: [{type: 'public-key', alg: -7}],
+            authenticatorSelection: {authenticatorAttachment: 'platform', userVerification: 'required'},
+            timeout: 60000
+        };
+        const credential = await navigator.credentials.create({
+            publicKey: publicKeyCredentialCreationOptions
+        });
+        if (credential) {
+            localStorage.setItem('bio_setup_complete', 'true');
+            localStorage.setItem('bio_credential_id', credential.id);
+            showToast('✓ تم إعداد البصمة بنجاح', 'success');
+        }
+    } catch (error) {
+        showToast('تم التخطي، يمكنك الإعداد لاحقاً', 'info');
+    }
+    document.getElementById('loading').classList.remove('active');
+    checkBiometricSupport();
+}
+function skipSetup() {
+    document.getElementById('setup-modal').classList.remove('active');
+    localStorage.setItem('bio_setup_complete', 'true');
+}
+// ================ تصدير السجلات ===============
+function exportReport() {
+    if (todayRecords.length === 0) {
+        showToast('لا توجد سجلات للتصدير', 'error');
+        return;
+    }
+    const today = new Date().toLocaleDateString('ar-SA').replace(/\//g, '-');
+    let csv = 'الاسم,المقر,التاريخ,الوقت,النوع,الطريقة,موثق\n';
+    todayRecords.forEach(r => {
+        csv += `${r.name||''},${r.location||''},${r.date},${r.fullTime},${r.type === 'checkin' ? 'دخول' : 'خروج'},${r.method === 'biometric' ? 'بصمة' : 'يدوي'},${r.verified ? 'نعم' : 'لا'}\n`;
+    });
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `attendance_bio_${today}.csv`;
+    link.click();
+    showToast('✓ تم تصدير التقرير', 'success');
+}
 function updateScannerState(state) {
     const ring = document.getElementById('scanner-ring');
     const inner = document.getElementById('scanner-inner');
     const text = document.getElementById('scanner-text');
-
     ring.className = 'scanner-ring';
     inner.className = 'scanner-inner';
     text.className = 'scanner-text';
-
     switch (state) {
         case 'scanning':
             ring.classList.add('active');
@@ -348,272 +542,19 @@ function updateScannerState(state) {
             text.textContent = `اضغط للتسجيل بالبصمة (${nextAction})`;
     }
 }
-
-// ==================== MANUAL ACTIONS ====================
-function manualCheckIn() {
-    performCheckIn('manual');
-}
-
-function manualCheckOut() {
-    performCheckOut('manual');
-}
-
-function performCheckIn(method) {
-    const now = new Date();
-    const record = {
-        id: Date.now(),
-        type: 'checkin',
-        time: now.toLocaleTimeString('ar-SA', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-        fullTime: now.toLocaleTimeString('ar-SA', { hour12: false }),
-        timestamp: now.getTime(),
-        date: now.toLocaleDateString('ar-SA'),
-        method: method,
-        verified: method === 'biometric'
-    };
-
-    todayRecords.push(record);
-    saveRecords();
-    updateUI();
-
-    const msg = method === 'biometric' ? '✓ تم تسجيل الدخول بالبصمة' : '✓ تم تسجيل الدخول';
-    showToast(msg, 'success');
-}
-
-function performCheckOut(method) {
-    const now = new Date();
-    const record = {
-        id: Date.now(),
-        type: 'checkout',
-        time: now.toLocaleTimeString('ar-SA', { hour12: false, hour: '2-digit', minute: '2-digit' }),
-        fullTime: now.toLocaleTimeString('ar-SA', { hour12: false }),
-        timestamp: now.getTime(),
-        date: now.toLocaleDateString('ar-SA'),
-        method: method,
-        verified: method === 'biometric'
-    };
-
-    todayRecords.push(record);
-    saveRecords();
-    updateUI();
-
-    const msg = method === 'biometric' ? '✓ تم تسجيل الخروج بالبصمة' : '✓ تم تسجيل الخروج';
-    showToast(msg, 'success');
-}
-
-// ==================== STORAGE ====================
-function saveRecords() {
-    localStorage.setItem('attendance_records', JSON.stringify(todayRecords));
-}
-
-function loadTodayRecords() {
-    const saved = localStorage.getItem('attendance_records');
-    if (saved) {
-        const all = JSON.parse(saved);
-        const today = new Date().toLocaleDateString('ar-SA');
-        todayRecords = all.filter(r => r.date === today);
-        updateUI();
-    }
-}
-
-// ==================== UI UPDATES ====================
-function updateTime() {
-    const now = new Date();
-    document.getElementById('current-time').textContent =
-        now.toLocaleTimeString('ar-SA', { hour12: false });
-    document.getElementById('current-date').textContent =
-        now.toLocaleDateString('ar-SA', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    document.getElementById('header-date').textContent =
-        now.toLocaleDateString('ar-SA');
-}
-
-function updateUI() {
-    renderRecords();
-    updateStatusBar();
-    updateButtons();
-    updateScannerText();
-}
-
-function renderRecords() {
-    const container = document.getElementById('records-list');
-
-    if (todayRecords.length === 0) {
-        container.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📝</div>
-                <p>لا توجد سجلات اليوم</p>
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = todayRecords.slice().reverse().map(record => `
-        <div class="record-item ${record.type}">
-            <div class="record-icon">${record.type === 'checkin' ? '✅' : '🚪'}</div>
-            <div class="record-info">
-                <div class="type">
-                    ${record.type === 'checkin' ? 'تسجيل دخول' : 'تسجيل خروج'}
-                    <span class="record-method ${record.method}">
-                        ${record.method === 'biometric' ? 'بصمة' : 'يدوي'}
-                    </span>
-                </div>
-                <div class="details">${record.fullTime}</div>
-            </div>
-        </div>
-    `).join('');
-}
-
-function updateStatusBar() {
-    const checkin = todayRecords.find(r => r.type === 'checkin');
-    const checkout = todayRecords.find(r => r.type === 'checkout');
-
-    document.getElementById('status-in').textContent = checkin ? checkin.time : '----';
-    document.getElementById('status-out').textContent = checkout ? checkout.time : '----';
-
-    if (checkin && checkout) {
-        const duration = checkout.timestamp - checkin.timestamp;
-        const hours = Math.floor(duration / 3600000);
-        const minutes = Math.floor((duration % 3600000) / 60000);
-        document.getElementById('status-duration').textContent = `${hours}:${minutes.toString().padStart(2, '0')}`;
-    } else {
-        document.getElementById('status-duration').textContent = '--';
-    }
-}
-
-function updateButtons() {
-    const lastRecord = todayRecords[todayRecords.length - 1];
-    const checkinBtn = document.getElementById('btn-checkin');
-    const checkoutBtn = document.getElementById('btn-checkout');
-
-    if (!lastRecord || lastRecord.type === 'checkout') {
-        checkinBtn.disabled = false;
-        checkoutBtn.disabled = true;
-    } else {
-        checkinBtn.disabled = true;
-        checkoutBtn.disabled = false;
-    }
-}
-
-function updateScannerText() {
-    if (isScanning) return;
-    const lastRecord = todayRecords[todayRecords.length - 1];
-    const nextAction = (!lastRecord || lastRecord.type === 'checkout') ? 'دخول' : 'خروج';
-    document.getElementById('scanner-text').textContent = `اضغط للتسجيل بالبصمة (${nextAction})`;
-}
-
-// ==================== SETUP ====================
-async function setupBiometric() {
-    document.getElementById('setup-modal').classList.remove('active');
-    document.getElementById('loading').classList.add('active');
-
-    try {
-        // Create credential for future use
-        const challenge = crypto.getRandomValues(new Uint8Array(32));
-        const userId = crypto.getRandomValues(new Uint8Array(16));
-
-        const publicKeyCredentialCreationOptions = {
-            challenge: challenge,
-            rp: {
-                name: 'حضوري',
-                id: window.location.hostname
-            },
-            user: {
-                id: userId,
-                name: 'user@huduri.app',
-                displayName: 'مستخدم حضوري'
-            },
-            pubKeyCredParams: [{
-                type: 'public-key',
-                alg: -7 // ES256
-            }],
-            authenticatorSelection: {
-                authenticatorAttachment: 'platform',
-                userVerification: 'required'
-            },
-            timeout: 60000
-        };
-
-        const credential = await navigator.credentials.create({
-            publicKey: publicKeyCredentialCreationOptions
-        });
-
-        if (credential) {
-            localStorage.setItem('bio_setup_complete', 'true');
-            localStorage.setItem('bio_credential_id', credential.id);
-            biometricRegistered = true;
-            showToast('✓ تم إعداد البصمة بنجاح', 'success');
-        }
-
-    } catch (error) {
-        showToast('تم التخطي، يمكنك الإعداد لاحقاً', 'info');
-    }
-
-    document.getElementById('loading').classList.remove('active');
-    checkBiometricSupport();
-}
-
-function skipSetup() {
-    document.getElementById('setup-modal').classList.remove('active');
-    localStorage.setItem('bio_setup_complete', 'true');
-}
-
-// ==================== EXPORT ====================
-function exportReport() {
-    if (todayRecords.length === 0) {
-        showToast('لا توجد سجلات للتصدير', 'error');
-        return;
-    }
-
-    const today = new Date().toLocaleDateString('ar-SA').replace(/\//g, '-');
-    let csv = 'التاريخ,الوقت,النوع,الطريقة,موثق\n';
-
-    todayRecords.forEach(r => {
-        csv += `${r.date},${r.fullTime},${r.type === 'checkin' ? 'دخول' : 'خروج'},${r.method === 'biometric' ? 'بصمة' : 'يدوي'},${r.verified ? 'نعم' : 'لا'}\n`;
-    });
-
-    // Summary
-    const checkin = todayRecords.find(r => r.type === 'checkin');
-    const checkout = todayRecords.find(r => r.type === 'checkout');
-    csv += '\nملخص اليوم\n';
-    csv += `الدخول,${checkin ? checkin.time : '--'}\n`;
-    csv += `الخروج,${checkout ? checkout.time : '--'}\n`;
-    if (checkin && checkout) {
-        const duration = checkout.timestamp - checkin.timestamp;
-        const hours = Math.floor(duration / 3600000);
-        const minutes = Math.floor((duration % 3600000) / 60000);
-        csv += `مدة العمل,${hours} ساعة ${minutes} دقيقة\n`;
-    }
-    csv += `طريقة التسجيل,${todayRecords.some(r => r.method === 'biometric') ? 'بصمة حيوية' : 'يدوي'}\n`;
-
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `attendance_bio_${today}.csv`;
-    link.click();
-
-    showToast('✓ تم تصدير التقرير', 'success');
-}
-
-// ==================== UTILS ====================
 function showToast(message, type = 'info') {
     const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.className = 'toast ' + type;
     toast.classList.add('show');
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
+    setTimeout(() => { toast.classList.remove('show'); }, 3000);
 }
-
-// Prevent zoom on double tap
 let lastTouchEnd = 0;
 document.addEventListener('touchend', (e) => {
     const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-        e.preventDefault();
-    }
+    if (now - lastTouchEnd <= 300) { e.preventDefault(); }
     lastTouchEnd = now;
 }, false);
-
 </script>
 </body>
 </html>
